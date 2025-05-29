@@ -7,7 +7,7 @@
 This library helps processing huge number of items in parallel while limiting
 the concurrency.
 
-It is intended to run a worker on a huge list (e.g. a stream) and you
+It is intended to run concurrent workers on a huge list (e.g. a stream) and you
 can iterator over the results in order.
 
 Let's imagine you read a huge file line by line. For each line you
@@ -38,24 +38,42 @@ With this library you can now change your loop to this:
 ```typescript
 import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline';
+import { processAsyncIterator } from 'simple-parallel-promise';
 
 const rl = createInterface({
   crlfDelay: Infinity,
   input: createReadStream(hugefile.txt),
 });
 
-for await (const result of processAsyncIterator(rl, 20, processLine)) {
+for await (const result of processAsyncIterator(rl, 3, processLine)) {
   console.log(result) // results will come in original order
 }
 ```
 
 This allows you to loop over the results. The `processAsyncIterator` will
-run 20 `processLine` concurrently and then stop consuming from your iterator
-(`rl in this case) until the first promise resolves. After the first promise
-resolves, the result is yielded and the another `processLine` is started.
+run 3 `processLine` concurrently and then stop consuming from your iterator
+(`rl` in this case) until the first promise resolves. After the first promise
+resolves, the result is yielded and another `processLine` is started.
 
 As a result we can start processing result immediatly, we don't have to fit
-all lines into memory and you can still consume results in order
+all lines into memory and you can still consume results in order.
+
+In the example above the following will happen in detail:
+
+- the first item from the iterator is consumed, the first line of the file
+- `processLine` is started with the content of the first line
+- the second item from the iterator is consumed, the second line of the file
+- `processLine` is started with the content of the second line
+- the third item from the iterator is consumed, the third line of the file
+- `processLine` is started with the content of the third line
+- we now reached the concurrency limit
+- we wait for `processLine` of the first line and yield the result
+- the content of the loop runs with the first result
+- the fourth item from the iterator is consumed, the forth line of the file
+- `processLine` is started for the forth line, hitting the concurrency
+- we wait for `processLine` of the second line and yield the result
+- the content of the loop runs with the second result
+- ...
 
 ## Running test
 
