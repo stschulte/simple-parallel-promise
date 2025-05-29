@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-cjs/
+dist-es/
+dist-types/
+.DS_Store
+*.log
+coverage
+.dccache
+.idea
+.vs
+.vscode
+aws-sdk-client-mock-vitest-*.tgz
