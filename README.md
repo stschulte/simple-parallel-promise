@@ -10,6 +10,16 @@ the concurrency.
 It is intended to run concurrent workers on a huge list (e.g. a stream) and you
 can iterator over the results in order.
 
+## Installation
+
+To install this library simply run
+
+```console
+npm i simple-parallel-promise
+```
+
+## Example
+
 Let's imagine you read a huge file line by line. For each line you
 want to run a function `processLine`. You may end up with this:
 
