@@ -23,16 +23,15 @@ export async function* processAsyncIterator<T, R>(iterator: AsyncIterable<T>, co
   // In case concurrency is 1, we actually don't need a ringbuffer at all
   if (concurrency <= 1) {
     for await (const item of iterator) {
-      yield await workerFn(item);
+      yield workerFn(item);
     }
   }
   else {
     const buffer = new PromiseRingBuffer<R>(concurrency - 1);
     for await (const item of iterator) {
-      const promise = workerFn(item);
-      const result = await buffer.add(promise);
-      if (result) {
-        yield result;
+      const promise = buffer.add(workerFn(item));
+      if (promise) {
+        yield promise;
       }
     }
     yield* buffer.flush();
@@ -62,16 +61,15 @@ export async function* processIterator<T, R>(iterator: Iterable<T>, concurrency:
   // In case concurrency is 1, we actually don't need a ringbuffer at all
   if (concurrency <= 1) {
     for (const item of iterator) {
-      yield await workerFn(item);
+      yield workerFn(item);
     }
   }
   else {
     const buffer = new PromiseRingBuffer<R>(concurrency - 1);
     for (const item of iterator) {
-      const promise = workerFn(item);
-      const result = await buffer.add(promise);
-      if (result) {
-        yield result;
+      const promise = buffer.add(workerFn(item));
+      if (promise) {
+        yield promise;
       }
     }
     yield* buffer.flush();

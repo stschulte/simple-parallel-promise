@@ -18,44 +18,40 @@ export class PromiseRingBuffer<T> {
   /**
    * Add a new item into the ringbuffer
    *
-   * If the ringbuffer is currently full, this will
-   * resolve the current promise in the buffer and then
-   * insert the new promise
+   * If the ringbuffer is currently full, this will return
+   * the replaced promise. Otherwise null is returned.
    *
    * @param item: A new promise to add
-   * @returns - the resolved promise if the buffer was full or null
+   * @returns - either `null` when the ringbuffer is not full yet or a previously
+   * inserted promise
    */
-  async add(item: Promise<T>): Promise<null | T> {
+  add(item: Promise<T>): null | Promise<T> {
     const promise = this.#buffer[this.#currentIdx];
     assert(promise !== undefined);
 
-    const result = promise ? await promise : null;
     this.#buffer[this.#currentIdx] = item;
-
     this.#currentIdx = incrementRotatingIndex(this.#currentIdx, this.#bufferSize);
 
     /* as long as we are filling the buffer, flushing begins at
      * idx 0. Otherwise flushing begins at the next item
      */
-    if (result) {
+    if (promise !== null) {
       this.#flushIdx = this.#currentIdx;
     }
-
-    return result;
+    return promise;
   }
 
-  async* flush(): AsyncGenerator<T, void, unknown> {
+  * flush(): Generator<Promise<T>, void, unknown> {
     let flushed = false;
     while (!flushed) {
       const promise = this.#buffer[this.#flushIdx];
-      if (!promise) {
-        flushed = true;
-      }
-      else {
-        const result = await promise;
-        yield result;
+      if (promise) {
+        yield promise;
         this.#buffer[this.#flushIdx] = null;
         this.#flushIdx = incrementRotatingIndex(this.#flushIdx, this.#bufferSize);
+      }
+      else {
+        flushed = true;
       }
     }
   }

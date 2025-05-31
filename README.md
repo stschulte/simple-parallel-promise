@@ -10,6 +10,9 @@ the concurrency.
 It is intended to run concurrent workers on a huge list (e.g. a stream) and you
 can iterator over the results in order.
 
+It is inteded to make it very easy to bring concurrency to iterating over a
+list and at the same time keep the implementation is easy as possible.
+
 ## Installation
 
 To install this library simply run
@@ -84,6 +87,20 @@ In the example above the following will happen in detail:
 - we wait for `processLine` of the second line and yield the result
 - the content of the loop runs with the second result
 - ...
+
+## How it works
+
+In case concurrency is greater than 1 `processAsyncIterator` and
+`processIterator` create a ringbuffer to store promises of your worker.
+Ringbuffer means we first add items to it until we hit the upper bound. We
+then start again at the beginning, replacing previously inserted items.
+
+Whenever we replace a previously added promise, we wait until it is resolved
+and then yield the result again so it can be processed by your loop.
+
+This means we always run up to `concurrency` worker functions. Please be aware
+that a long-running woker may prevent additional workers from being scheduled
+since we always await the promises in the inserted order.
 
 ## Running test
 
