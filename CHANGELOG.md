@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update Typescript to emit ES2022 code
+
 ## [1.0.0] - 2025-05-31
 
 ### Changed
