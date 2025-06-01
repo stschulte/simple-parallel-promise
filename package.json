@@ -1,6 +1,6 @@
 {
   "name": "simple-parallel-promise",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Iterate over a list of jobs and process them in parallel, providing the response in order",
   "type": "module",
   "module": "./dist/index.js",
