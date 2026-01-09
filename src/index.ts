@@ -1,6 +1,26 @@
 import { PromiseRingBuffer } from './ringbuffer.js';
 
 /**
+ * Calls a defined callback function on each element of an array concurrently, and returns an array that contains the results.
+ *
+ + This function works similar to `map` on an array, but it runs up to `concurrency` async callback functions in parallel
+ * The result array will preserve the order of the input
+ *
+ * @param iterator - An iterable of items (e.g. an array)
+ * @param concurrency - Number of concurrent items that should be processed
+ * @param workerFn - An async function to run on each item
+ * @returns - The processed array after running workerFn on each item
+ *
+ */
+export async function map<T, R>(iterator: Iterable<T>, concurrency: number, workerFn: (item: T) => Promise<R>): Promise<R[]> {
+  const result: R[] = [];
+  for await (const item of processIterator(iterator, concurrency, workerFn)) {
+    result.push(item);
+  }
+  return result;
+}
+
+/**
  * Processes an async iterator concurrently, yielding results in original order
  *
  * The function processes an async iterator (representing some form of job)

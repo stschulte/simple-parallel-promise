@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New map function that works like map but processes items concurrently
+
 ## [1.1.0] - 2025-06-01
 
 ### Changed

@@ -3,8 +3,8 @@ import stylistic from '@stylistic/eslint-plugin';
 import vitest from '@vitest/eslint-plugin';
 import gitignore from 'eslint-config-flat-gitignore';
 import perfectionist from 'eslint-plugin-perfectionist';
-import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   gitignore(),
