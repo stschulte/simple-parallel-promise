@@ -1,7 +1,7 @@
 import { setTimeout } from 'node:timers/promises';
 import { describe, expect, it } from 'vitest';
 
-import { processAsyncIterator, processIterator } from '../src/index.js';
+import { map, processAsyncIterator, processIterator } from '../src/index.js';
 
 async function* demoAsyncIterator(count: number) {
   for (let i = 1; i <= count; i++) {
@@ -20,7 +20,7 @@ describe('processIterator', () => {
     const iterator = demoIterator(7);
     const worker = async (item: string) => {
       await setTimeout(40 + Math.floor(20 * Math.random()));
-      return `${item.toString()}-done`;
+      return `${item}-done`;
     };
 
     const results = [];
@@ -43,7 +43,7 @@ describe('processIterator', () => {
     const iterator = demoIterator(7);
     const worker = async (item: string) => {
       await setTimeout(40 + Math.floor(20 * Math.random()));
-      return `${item.toString()}-done`;
+      return `${item}-done`;
     };
 
     const results = [];
@@ -68,7 +68,7 @@ describe('processAsyncIterator', () => {
     const iterator = demoAsyncIterator(7);
     const worker = async (item: string) => {
       await setTimeout(40 + Math.floor(20 * Math.random()));
-      return `${item.toString()}-done`;
+      return `${item}-done`;
     };
 
     const results = [];
@@ -91,7 +91,7 @@ describe('processAsyncIterator', () => {
     const iterator = demoAsyncIterator(7);
     const worker = async (item: string) => {
       await setTimeout(40 + Math.floor(20 * Math.random()));
-      return `${item.toString()}-done`;
+      return `${item}-done`;
     };
 
     const results = [];
@@ -108,5 +108,18 @@ describe('processAsyncIterator', () => {
       'item-6-done',
       'item-7-done',
     ]);
+  });
+});
+
+describe('map', () => {
+  it('works like map', async () => {
+    const iterator = [1, 2, 3, 4, 5];
+
+    const result = await map(iterator, 3, async (item) => {
+      await setTimeout(40 + Math.floor(20 * Math.random()));
+      return item * 2;
+    });
+
+    expect(result).toStrictEqual([2, 4, 6, 8, 10]);
   });
 });

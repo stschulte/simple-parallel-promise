@@ -21,7 +21,29 @@ To install this library simply run
 npm i simple-parallel-promise
 ```
 
-## Example
+## Map example
+
+Let's imagine you want to run map on an array to perform some processing.
+The callback is async and you want to limit the number of callbacks to run
+at a time.
+
+```typescript
+import { map } from 'simple-parallel-promise';
+const inputArray = [1,2,3,4,5]
+
+// Run a function on each item. In this case we randomly wait
+// and then simply double the item to immitiate some hard work
+// We will run 3 callbacks at a time
+const result = await map(inputArray, 3, async (item) => {
+  await setTimeout(40 + Math.floor(20 * Math.random()));
+  return item * 2
+})
+
+console.log(result)
+# returns [2,4,6,8,10]
+```
+
+## Iterator example
 
 Let's imagine you read a huge file line by line. For each line you
 want to run a function `processLine`. You may end up with this:
