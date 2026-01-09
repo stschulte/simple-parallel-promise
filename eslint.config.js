@@ -4,8 +4,9 @@ import vitest from '@vitest/eslint-plugin';
 import gitignore from 'eslint-config-flat-gitignore';
 import perfectionist from 'eslint-plugin-perfectionist';
 import tseslint from 'typescript-eslint';
+import { defineConfig } from 'eslint/config';
 
-export default tseslint.config(
+export default defineConfig(
   gitignore(),
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
